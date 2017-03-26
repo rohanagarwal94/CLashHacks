@@ -1,16 +1,39 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+apply plugin: 'android-apt'
+apply plugin: 'realm-android'
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
-        applicationId "com.rishabh.clashhacks"
-        minSdkVersion 21
+        applicationId "com.example.rohanagarwal94.hackdtu"
+        minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Enabling multidex support.
+        multiDexEnabled true
     }
+
+    packagingOptions {
+        exclude 'META-INF/NOTICE' // will not include NOTICE file
+        exclude 'META-INF/LICENSE' // will not include LICENSE file
+        // as noted by @Vishnuvathsan you may also need to include
+        // variations on the file name. It depends on your dependencies.
+        // Some other common variations on notice and license file names
+        exclude 'META-INF/notice'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license'
+        exclude 'META-INF/license.txt'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -21,9 +44,51 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.3.0'
     testCompile 'junit:junit:4.12'
+    compile files('libs/volley.jar')
+    compile "com.android.support:appcompat-v7:$support_lib_version"
+    compile "com.android.support:recyclerview-v7:$support_lib_version"
+    compile "com.android.support:design:$support_lib_version"
+    compile "com.android.support:customtabs:$support_lib_version"
+    compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
+    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.0.1'
+    compile 'com.firebase:firebase-client-android:2.5.0'
+
+
+    //For Glide
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile "com.android.support:support-v4:$support_lib_version"
+
+    //Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    debugCompile "com.squareup.okhttp3:logging-interceptor:3.3.1"
+
+    //For Link Previews
+    compile 'org.jsoup:jsoup:1.8.3' // required
+    compile 'com.leocardz:link-preview:1.2.1@aar'
+
+    //preference UI
+    compile 'com.takisoft.fix:preference-v7:25.0.1.0'
+
+    //realm adapter
+    compile 'io.realm:android-adapters:1.3.0'
+
+    //waiting dots
+    compile 'com.github.tajchert:WaitingDots:0.3.2'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true;
+    }
+
+    /*
+    butterknife
+    */
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
 }
+
+
+apply plugin: 'com.google.gms.google-services'
