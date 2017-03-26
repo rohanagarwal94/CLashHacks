@@ -144,6 +144,7 @@ public class ChatBotActivity extends AppCompatActivity {
     private Boolean check;
     private Menu menu;
     private int pointer;
+    private String locationName;
     private RealmResults<ChatMessage> results;
     private int offset = 1;
     private ChatFeedRecyclerAdapter recyclerAdapter;
@@ -243,6 +244,15 @@ public class ChatBotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
 
+        checkLocation();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                locationName = getLocationName(latitude, longitude);
+                Log.d("location", locationName);
+            }
+        }, 5000);
         init();
     }
 
@@ -934,7 +944,7 @@ public class ChatBotActivity extends AppCompatActivity {
 
     public String getLocationName(double lattitude, double longitude) {
 
-        String cityName = "Not Found";
+        String cityName = "Delhi";
         Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
         try {
 
