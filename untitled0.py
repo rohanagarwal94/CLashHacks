@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Mar 26 04:05:27 2017
+
 @author: lenovo
 """
 #18a7b385ee3433d4d37492e4ce23d45a
@@ -8,9 +9,10 @@ import requests
 import json
 import numpy as np
 from nltk import tokenize
-from google.cloud import language
+import http.client, urllib.request, urllib.parse, urllib.error, base64
 
 city="delhi ncr"
+word="Fried Rice"
 url = "https://developers.zomato.com/api/v2.1/cities?q="+city
 
 headers = {"Content-type": "application/json",
@@ -18,7 +20,7 @@ headers = {"Content-type": "application/json",
 r  = requests.get(url,headers=headers)
 
 jData = json.loads(r.content)
-#print(jData)
+print(jData)
 l=jData['location_suggestions']
 entity_id=0
 for i in range(len(l)):
@@ -90,24 +92,47 @@ for i in range(len(selected_restaurants)):
         if(review!=""):
             lines=tokenize.sent_tokenize(review)
             ans=""
-            word="Fried Rice"
             for i in range(len(lines)):
                 if word in lines[i] or word.lower() in lines[i]:
                     ans=ans+lines[i]
             reviews.append(ans)
-print(len(reviews))
+print(reviews)
 
 def find_rating(restaurant_rating, review_rating):
     return (restaurant_rating/5+review_rating)/2
 
 def analyse_review(review):
-    language_client = language.Client()
-    document = language_client.document_from_text(review)
-    sentiment = document.analyze_sentiment().sentiment
-    return sentiment.score                                      
+    headers = {
+        'Content-Type': 'application/json',
+        'Ocp-Apim-Subscription-Key': '61a10ca56bf249818d899fc4c4fb709f',
+        }
+
+    params = urllib.parse.urlencode({
+            })
+    body={
+            "documents": [
+                    {
+                            "language": "en",
+                            "id": "2",
+                                "text": review
+                                }
+                    ]
+            }
+    try:
+            conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
+            conn.request("POST", "/text/analytics/v2.0/sentiment?%s" % params, str(body), headers)
+            response = conn.getresponse()
+            data = response.read()
+            j = json.loads(data.content)
+            print(j['documents'][0]['score'])
+            conn.close()
+            return ['documents'][0]['score']
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+    
 
 actual_ratings=[]
-#get ratings for each restaurant based on their reviews
+
 for i in range(len(reviews)):
     if(reviews[i]==""):
         actual_ratings.append(find_rating(user_restaurants_ratings[i],0.3))
